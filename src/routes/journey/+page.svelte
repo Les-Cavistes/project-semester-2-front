@@ -22,6 +22,10 @@
   // Derived value to check if both inputs have valid selections
   $: canSubmit = isValidFrom && isValidTo;
 
+  // Add these variables to track if dropdowns should be shown
+  let showFromDropdown = false;
+  let showToDropdown = false;
+
   // Functions
   const fetchPlace = async (search: string): Promise<TPlaces['places']> => {
     const res = await fetch(`/api/places?q=${encodeURIComponent(search)}`);
@@ -39,6 +43,7 @@
   const handleFromInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
     isValidFrom = validateInput(input.value, fromSuggestions);
+    showFromDropdown = true;
 
     if (isValidFrom) {
       toInput?.focus();
@@ -48,6 +53,7 @@
   const handleToInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
     isValidTo = validateInput(input.value, toSuggestions);
+    showToDropdown = true;
   };
 
   const handleFromChange = async (value: string) => {
@@ -94,6 +100,27 @@
     datetime = formatDatetime(new Date());
   }
 
+  // Add these functions to handle suggestion selection
+  const selectFromSuggestion = (suggestion: TPlaces['places'][0]) => {
+    from = suggestion.name;
+    isValidFrom = true;
+    showFromDropdown = false;
+    toInput?.focus();
+  };
+
+  const selectToSuggestion = (suggestion: TPlaces['places'][0]) => {
+    to = suggestion.name;
+    isValidTo = true;
+    showToDropdown = false;
+  };
+
+  // Close dropdowns when clicking outside
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.from-group')) showFromDropdown = false;
+    if (!target.closest('.to-group')) showToDropdown = false;
+  };
+
   const handleSubmit = () => {
     if (!canSubmit) return;
 
@@ -115,6 +142,8 @@
   };
 </script>
 
+<svelte:window on:click={handleClickOutside}/>
+
 <div class="journey-container">
   <h1>Plan Your Journey</h1>
 
@@ -126,18 +155,41 @@
         <input
           type="text"
           id="from"
-          list="from-suggestions"
           bind:value={from}
           placeholder="Enter starting location"
           use:debounce={{ callback: handleFromChange, delay: 100 }}
           on:input={handleFromInput}
         />
+        {#if showFromDropdown && fromSuggestions.length > 0}
+          <div class="suggestions-dropdown">
+            {#each fromSuggestions as suggestion}
+              <button
+                  class="suggestion-item"
+                  on:click={() => selectFromSuggestion(suggestion)}
+              >
+                <div class="suggestion-main">
+                  <span class="suggestion-name">{suggestion.name}</span>
+                  {
+                      #if suggestion.stop_area?.lines && suggestion.stop_area.lines.length > 0
+                  }
+                    <div class="line-badges">
+                      {#each suggestion.stop_area.lines as line}
+                        {#if
+                          !["commercial_mode:Bus", "commercial_mode:Train", "commercial_mode:regionalRail"].includes(line.commercial_mode.id)
+                        }
+                          <span class="line-badge" style="background-color: #{line.color || '666'}">
+                            {line.code}
+                          </span>
+                        {/if}
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
-      <datalist id="from-suggestions">
-        {#each fromSuggestions as suggestion}
-          <option value={suggestion.name}></option>
-        {/each}
-      </datalist>
     </div>
 
     <div class="input-group to-group">
@@ -147,19 +199,36 @@
         <input
           type="text"
           id="to"
-          list="to-suggestions"
           bind:value={to}
           bind:this={toInput}
           placeholder="Enter destination"
           use:debounce={{ callback: handleToChange, delay: 100 }}
           on:input={handleToInput}
         />
+        {#if showToDropdown && toSuggestions.length > 0}
+          <div class="suggestions-dropdown">
+            {#each toSuggestions as suggestion}
+              <button
+                  class="suggestion-item"
+                  on:click={() => selectToSuggestion(suggestion)}
+              >
+                <div class="suggestion-main">
+                  <span class="suggestion-name">{suggestion.name}</span>
+                  {#if suggestion.stop_area?.lines && suggestion.stop_area.lines.length > 0}
+                    <div class="line-badges">
+                      {#each suggestion.stop_area.lines as line}
+                        <span class="line-badge" style="background-color: #{line.color || '666'}">
+                          {line.code}
+                        </span>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
-      <datalist id="to-suggestions">
-        {#each toSuggestions as suggestion}
-          <option value={suggestion.name}></option>
-        {/each}
-      </datalist>
     </div>
 
     <div class="datetime-group">
@@ -475,5 +544,65 @@
         width: 100%;
       }
     }
+  }
+
+  .suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-top: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+
+  .suggestion-item {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #e5e7eb;
+    }
+  }
+
+  .suggestion-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .suggestion-name {
+    font-size: 0.875rem;
+    color: #1f2937;
+  }
+
+  .line-badges {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .line-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    min-width: 1.5rem;
+    text-align: center;
   }
 </style>

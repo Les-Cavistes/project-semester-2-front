@@ -11,17 +11,17 @@ import {
   type RequestHandler
 } from '@sveltejs/kit';
 import {RATP_API_ENDPOINT_V2} from '$lib/consts/';
-import axios from "axios";
-import {PlacesSchema} from "$lib/schemas/";
+import axios, {type AxiosResponse} from "axios";
+import {PlacesSchema, type TPlaces} from "$lib/schemas/";
 
 export const GET: RequestHandler = async ({url}) => {
-    const query = url.searchParams.get('q') || url.searchParams.get('query');
+  const query = url.searchParams.get('q') || url.searchParams.get('query');
 
-    if (!query) {
-      throw error(400, '`query` parameter is required');
-    }
+  if (!query) {
+    throw error(400, '`query` parameter is required');
+  }
 
-    const request = await axios.get(`${RATP_API_ENDPOINT_V2}/navitia/places`,
+  const request: AxiosResponse<TPlaces[]> = await axios.get(`${RATP_API_ENDPOINT_V2}/navitia/places`,
       {
         params: {
           q: query,
@@ -34,7 +34,12 @@ export const GET: RequestHandler = async ({url}) => {
     )
 
     if (request.status === 200) {
-      return json(PlacesSchema.parse(request.data));
+      try {
+        const data = PlacesSchema.parse(request.data);
+        return json(data);
+      } catch (e: any) {
+        throw error(500, e);
+      }
     }
 
     throw error(request.status, request.statusText);
