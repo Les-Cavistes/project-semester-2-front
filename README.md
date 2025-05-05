@@ -1,38 +1,45 @@
-# sv
+## Installation
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+1. Clone the repository
+2. Install dependencies:
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+  ```bash
+  npm install
+  # or
+  yarn install
 ```
 
-## Developing
+## Environment Setup
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+1. Copy the example environment file:
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+cp .env.example .env
 ```
 
-## Building
+2. Update the `.env` file with your credentials:
 
-To create a production version of your app:
+- `RATP_API_KEY`: Your RATP API key
 
+## Development Tools
+
+### [Biome](http://biomejs.dev/)
+
+This project uses Biome for code formatting and linting. It's automatically run before commits via Hooksmith.
+
+To manually run Biome:
 ```bash
-npm run build
+npx biome check src/
 ```
 
-You can preview the production build with `npm run preview`.
+### [Hooksmith](https://github.com/tomPlanche/hooksmith) (optional)
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Git hooks are managed by Hooksmith. Pre-commit hooks will run:
+
+- Biome checks
+- TypeScript type checking
+
+Install via:
+
+```bash
+cargo install hooksmith && hooksmith install
+```
