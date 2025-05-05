@@ -11,6 +11,7 @@ vi.mock("@googlemaps/google-maps-services-js", () => {
   return {
     Client: vi.fn().mockImplementation(() => ({
       placeAutocomplete: vi.fn(),
+      placeDetails: vi.fn(),
     })),
   };
 });
@@ -60,8 +61,14 @@ describe("GoogleServices", () => {
       const mockResponse = {
         data: {
           predictions: [
-            { description: "Paris, France", place_id: "place_id_1" },
-            { description: "Paris, Texas, USA", place_id: "place_id_2" },
+            {
+              description: "Paris, France",
+              place_id: "place_id_1",
+            },
+            {
+              description: "Paris, Texas, USA",
+              place_id: "place_id_2",
+            },
           ],
           status: "OK",
         },
@@ -82,7 +89,9 @@ describe("GoogleServices", () => {
 
       const result = await googleServices.placeAutocomplete(params);
 
-      expect(mockClient.placeAutocomplete).toHaveBeenCalledWith({ params });
+      expect(mockClient.placeAutocomplete).toHaveBeenCalledWith({
+        params,
+      });
       expect(result).toBe(mockResponse);
     });
 
@@ -102,9 +111,11 @@ describe("GoogleServices", () => {
       };
 
       // @ts-ignore - Mocking the Client implementation
-      await expect(googleServices.placeAutocomplete(params)).rejects.toThrow(
-        "API Error",
-      );
+      await expect(
+        googleServices.placeAutocomplete(
+          params as unknown as PlaceAutocompleteRequest["params"],
+        ),
+      ).rejects.toThrow("API Error");
     });
   });
 
@@ -113,6 +124,62 @@ describe("GoogleServices", () => {
       // The function should return the singleton instance
       const instance = googleServices();
       expect(instance).toBeInstanceOf(GoogleServices);
+    });
+  });
+
+  describe("placeDetails", () => {
+    it("should call client.placeDetails with the correct parameters", async () => {
+      const mockResponse = {
+        data: {
+          result: {
+            geometry: {
+              location: {
+                lat: 48.8566,
+                lng: 2.3522,
+              },
+            },
+          },
+          status: "OK",
+        },
+      };
+
+      const mockClient = {
+        placeAutocomplete: vi.fn(),
+        placeDetails: vi.fn().mockResolvedValue(mockResponse),
+      };
+
+      // @ts-ignore - Mocking the Client implementation
+      Client.mockImplementation(() => mockClient);
+
+      const googleServices = GoogleServices.getInstance();
+      const placeId = "test_place_id";
+
+      const result = await googleServices.placeDetails(placeId);
+
+      expect(mockClient.placeDetails).toHaveBeenCalledWith({
+        params: {
+          place_id: placeId,
+          fields: ["geometry"],
+        },
+      });
+      expect(result).toBe(mockResponse);
+    });
+
+    it("should propagate errors from the API call", async () => {
+      const mockError = new Error("Places API Error");
+      const mockClient = {
+        placeAutocomplete: vi.fn(),
+        placeDetails: vi.fn().mockRejectedValue(mockError),
+      };
+
+      // @ts-ignore - Mocking the Client implementation
+      Client.mockImplementation(() => mockClient);
+
+      const googleServices = GoogleServices.getInstance();
+
+      await expect(
+        googleServices.placeDetails("invalid_place_id"),
+      ).rejects.toThrow("Places API Error");
     });
   });
 });
