@@ -1,0 +1,4 @@
+pre-commit:
+  commands:
+    - npx biome check src/
+    - npx svelte-check --tsconfig ./tsconfig.json
