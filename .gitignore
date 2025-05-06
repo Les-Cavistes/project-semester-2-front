@@ -30,3 +30,4 @@ vite.config.ts.timestamp-*
 **/commit_message.md
 **/yarn.lock
 **/pnpm-workspace.yaml
+**/coverage/

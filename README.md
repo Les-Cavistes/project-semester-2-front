@@ -18,8 +18,6 @@ cp .env.example .env
 
 2. Update the `.env` file with your credentials:
 
-- `RATP_API_KEY`: Your RATP API key
-
 ## Development Tools
 
 ### [Biome](http://biomejs.dev/)
