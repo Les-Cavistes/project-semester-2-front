@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@googlemaps/google-maps-services-js": "^3.4.1",
 		"axios": "^1.9.0",
-		"dotenv": "^16.5.0"
+		"dotenv": "^16.5.0",
+		"sveltekit-i18n": "^2.4.2"
 	}
 }
