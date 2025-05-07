@@ -1,6 +1,6 @@
-import { PlacesSchema, type TPlaces } from "$lib/schemas";
-import { error } from "@sveltejs/kit";
-import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import {PlacesSchema, type TPlaces} from "$lib/schemas";
+import {error} from "@sveltejs/kit";
+import axios, {type AxiosInstance, type AxiosResponse} from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -53,7 +53,7 @@ export class RatpServices {
    * @returns {Promise<TPlaces[]>} The list of places matching the query.
    */
   public getStopAutocomplete = async (query: string): Promise<TPlaces> => {
-    const request: AxiosResponse<TPlaces[]> = await this.axiosInstanceV2.get(
+    const request: AxiosResponse<TPlaces> = await this.axiosInstanceV2.get(
       "/navitia/places/",
       {
         params: {

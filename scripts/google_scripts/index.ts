@@ -1,4 +1,4 @@
-import {GoogleServices} from "../../src/lib/utils/googleServices.ts";
+import {GoogleServices} from "../../src/lib/services/googleServices.ts";
 import type {PlaceAutocompleteRequest} from "@googlemaps/google-maps-services-js";
 
 const googleServices = GoogleServices.getInstance();

@@ -1,4 +1,4 @@
-import {ratpServices} from "../../src/lib/utils/ratpServices.ts";
+import {ratpServices} from "../../src/lib/services/ratpServices.ts";
 
 const ratpServicesInstance = ratpServices();
 

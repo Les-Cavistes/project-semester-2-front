@@ -1,4 +1,4 @@
-import { GoogleServices, googleServices } from "$lib/utils/googleServices";
+import { GoogleServices, googleServices } from "$lib/services/googleServices";
 import {
   Client,
   type PlaceAutocompleteRequest,
