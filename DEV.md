@@ -1,5 +1,75 @@
 # Development Guide
 
+## Structure
+
+This guide covers the following topics:
+
+1. **Code Quality**
+   - [Biome](#biome) - Code formatting and linting
+   - Pre-commit hooks
+
+2. **Internationalization**
+   - [i18n Setup](#internationalization-i18n)
+   - Language configuration
+   - Translation management
+   - Adding new languages
+
+3. **External Services**
+   - [RATP Services](#ratp-services) - Paris public transport API
+   - [Google Services](#google-services) - Maps and Places API
+
+4. **UI/UX Features**
+   - [Input Debouncing](#input-debouncing)
+
+---
+
+## Biome
+
+[Biome](https://biomejs.dev/) is a performant formatter and linter for JavaScript, TypeScript, JSX, and JSON that drops
+in place as a replacement for Prettier + ESLint. It's used in this project to ensure consistent code style and catch
+potential issues early.
+
+I'll be used by the pre-commit hook to check for formatting and linting issues before code is committed.
+
+### Setup
+
+#### VS Code
+
+1. Install the [Biome VS Code Extension](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
+2. Open VS Code settings (CMD/CTRL + ,)
+3. Search for "default formatter"
+4. Set Biome as the default formatter for JavaScript and TypeScript files
+5. Enable "Format On Save" if desired
+
+#### WebStorm/JetBrains IDEs
+
+1. Install the [Biome plugin](https://plugins.jetbrains.com/plugin/22761-biome) from the marketplace
+2. Go to Settings | Languages & Frameworks | Biome
+3. Enable Biome and configure the path to your Biome binary (usually in `node_modules`)
+4. Set all `on save` actions.
+
+#### Manual Setup
+
+If you prefer to run Biome from the command line:
+
+```bash
+# Format files
+npx @biomejs/biome format ./src
+
+# Check for issues
+npx @biomejs/biome check ./src
+
+# Format and apply fixes
+npx @biomejs/biome check --apply ./src
+```
+
+### Configuration
+
+The Biome configuration is in the `biome.json` file at the root of the project. This defines our formatting rules and
+linting preferences.
+
+---
+
 ## Internationalization (i18n)
 
 This project uses `sveltekit-i18n` for handling translations and internationalization. The system is set up to support multiple languages, currently including English (en) and French (fr).
