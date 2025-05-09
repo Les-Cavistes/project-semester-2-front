@@ -1,3 +1,32 @@
 {
-  "welcome": "Bienvenue"
+  "welcome": "Bienvenue",
+  "journey": {
+    "title": "Planificateur d'Itinéraire",
+    "startPoint": "Point de Départ",
+    "destination": "Destination",
+    "findJourney": "Trouver un Itinéraire",
+    "loading": "Chargement...",
+    "noResults": "Aucun itinéraire trouvé pour ces coordonnées.",
+    "journeyOptions": "Options d'Itinéraire",
+    "journeyDetails": "Détails de l'Itinéraire",
+    "option": "Option",
+    "total": "Total",
+    "sections": "sections",
+    "showRawData": "Afficher les Données Brutes"
+  },
+  "coordinates": {
+    "longitude": "Longitude",
+    "latitude": "Latitude"
+  },
+  "errors": {
+    "invalidCoordinates": "Toutes les coordonnées doivent être des nombres valides",
+    "longitudeRange": "La longitude doit être comprise entre -180 et 180",
+    "latitudeRange": "La latitude doit être comprise entre -90 et 90",
+    "fetchFailed": "Échec de la récupération des données d'itinéraire"
+  },
+  "transportTypes": {
+    "public_transport": "Transport Public",
+    "street_network": "Marche",
+    "transfer": "Correspondance"
+  }
 }

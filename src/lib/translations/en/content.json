@@ -1,3 +1,32 @@
 {
-  "welcome": "Welcome"
+  "welcome": "Welcome",
+  "journey": {
+    "title": "Journey Planner",
+    "startPoint": "Starting Point",
+    "destination": "Destination",
+    "findJourney": "Find Journey",
+    "loading": "Loading...",
+    "noResults": "No journey options found for these coordinates.",
+    "journeyOptions": "Journey Options",
+    "journeyDetails": "Journey Details",
+    "option": "Option",
+    "total": "Total",
+    "sections": "sections",
+    "showRawData": "Show Raw Response Data"
+  },
+  "coordinates": {
+    "longitude": "Longitude",
+    "latitude": "Latitude"
+  },
+  "errors": {
+    "invalidCoordinates": "All coordinates must be valid numbers",
+    "longitudeRange": "Longitude must be between -180 and 180",
+    "latitudeRange": "Latitude must be between -90 and 90",
+    "fetchFailed": "Failed to fetch journey data"
+  },
+  "transportTypes": {
+    "public_transport": "Public Transport",
+    "street_network": "Walking",
+    "transfer": "Transfer"
+  }
 }
