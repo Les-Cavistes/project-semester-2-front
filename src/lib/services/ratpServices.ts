@@ -1,6 +1,6 @@
-import {PlacesSchema, type TPlaces} from "$lib/schemas";
-import {error} from "@sveltejs/kit";
-import axios, {type AxiosInstance, type AxiosResponse} from "axios";
+import { PlacesSchema, type TPlaces } from "$lib/schemas";
+import { error } from "@sveltejs/kit";
+import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
