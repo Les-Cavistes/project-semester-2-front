@@ -51,28 +51,49 @@ export class RatpServices {
    *
    * @param query {string} The query to search for.
    * @returns {Promise<TPlaces[]>} The list of places matching the query.
+   * @throws {Error} When the API request fails or response validation fails
    */
-  public getStopAutocomplete = async (query: string): Promise<TPlaces> => {
-    const request: AxiosResponse<TPlaces> = await this.axiosInstanceV2.get(
-      "/navitia/places/",
-      {
-        params: {
-          q: encodeURIComponent(query),
-          display_geojson: false,
+  public async getStopAutocomplete(query: string): Promise<TPlaces> {
+    try {
+      const request: AxiosResponse<TPlaces> = await this.axiosInstanceV2.get(
+        "/navitia/places/",
+        {
+          params: {
+            q: encodeURIComponent(query),
+            display_geojson: false,
+          },
         },
-      },
-    );
+      );
 
-    if (request.status === 200) {
-      try {
-        return PlacesSchema.parse(request.data);
-      } catch (e) {
-        throw error(500, e as Error);
+      if (request.status !== 200) {
+        return Promise.reject(
+          error(request.status, `API request failed: ${request.statusText}`),
+        );
       }
-    }
 
-    throw error(request.status, request.statusText);
-  };
+      return PlacesSchema.parse(request.data);
+    } catch (e) {
+      if (e instanceof Error) {
+        // Handle validation errors
+        if (e.name === "ZodError") {
+          return Promise.reject(
+            error(500, `Response validation failed: ${e.message}`),
+          );
+        }
+        // Handle axios errors
+        if (axios.isAxiosError(e)) {
+          return Promise.reject(
+            error(
+              e.response?.status || 500,
+              `API request failed: ${e.message}`,
+            ),
+          );
+        }
+      }
+      // Handle unknown errors
+      return Promise.reject(error(500, "An unexpected error occurred"));
+    }
+  }
 }
 
 export const ratpServices = RatpServices.getInstance;
