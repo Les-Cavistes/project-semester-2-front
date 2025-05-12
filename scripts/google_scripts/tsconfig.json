@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
@@ -18,12 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "baseUrl": "../..",
-    "types": [
-      "bun-types"
-    ]
+    "types": ["bun-types"]
   },
-  "include": [
-    ".",
-    "../../src/**/*"
-  ]
+  "include": [".", "../../src/**/*"]
 }

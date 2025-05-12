@@ -1,4 +1,4 @@
-import {ratpServices} from "../../src/lib/services/ratpServices.ts";
+import { ratpServices } from "../../src/lib/services/ratpServices.ts";
 
 const ratpServicesInstance = ratpServices();
 
@@ -13,7 +13,6 @@ const ratpServicesInstance = ratpServices();
     for (const place of response.places) {
       console.log(`Place: ${place.name}, ID: ${place.id}`);
     }
-
   } catch (error) {
     console.error("Error fetching autocomplete:", error);
   }
