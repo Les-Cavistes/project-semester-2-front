@@ -54,11 +54,14 @@ import { t } from "$lib/translations";
     text-decoration: none;
     color: #333;
     background: #f9f9f9;
-    transition: background 0.2s;
+    transition: all 0.2s ease-in-out;
+    position: relative;
   }
 
   .card:hover {
     background: #e9e9e9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
 
   .card h2 {
