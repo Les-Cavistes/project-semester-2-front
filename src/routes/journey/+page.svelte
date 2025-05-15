@@ -15,14 +15,19 @@
     const validationError = $state<string | null>(null);
     let selectedJourney = $state<TJourney | null>(null);
     
-    function formatTime(timestamp: string): string {
-      return `${timestamp.substring(9, 11)}:${timestamp.substring(11, 13)}:${timestamp.substring(13, 15)}`;
-    }
-    
     function formatDuration(seconds: number): string {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
       return `${minutes}m ${remainingSeconds}s`;
+    }
+
+    function formatDate(date: Date): string {
+      const options: Intl.DateTimeFormatOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+      return new Date(date).toLocaleString(undefined, options);
     }
     
     function getTransportIcon(type: string): string {
@@ -206,14 +211,14 @@
                   
                   <div class="section-content">
                     <div class="section-from">
-                      <span class="time">{formatTime(section.departure_date_time)}</span>
+                      <span class="time">{formatDate(section.departure_date_time)}</span>
                       <span class="location">{section.from.name}</span>
                     </div>
                     
                     <div class="section-divider"></div>
                     
                     <div class="section-to">
-                      <span class="time">{formatTime(section.arrival_date_time)}</span>
+                      <span class="time">{formatDate(section.arrival_date_time)}</span>
                       <span class="location">{section.to.name}</span>
                     </div>
                   </div>

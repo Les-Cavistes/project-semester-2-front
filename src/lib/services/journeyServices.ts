@@ -2,6 +2,20 @@ import axios from "axios";
 import { JourneysResponseSchema, type TJourneysResponse } from "$lib/schemas";
 import { error } from "@sveltejs/kit";
 
+type Coordinates = {
+  lon: number;
+  lat: number;
+};
+
+/**
+ * Formats coordinates into a string representation
+ * @param coords - Coordinate object with longitude and latitude
+ * @returns Formatted string in the format "lon;lat"
+ */
+export const formatCoordinates = (coords: Coordinates): string => {
+  return `${coords.lon};${coords.lat}`;
+};
+
 export class JourneyServices {
   private static instance: JourneyServices;
 
@@ -31,8 +45,8 @@ export class JourneyServices {
     toLat: number
   ): Promise<TJourneysResponse> {
     try {
-      const fromCoords = `${fromLon};${fromLat}`;
-      const toCoords = `${toLon};${toLat}`;
+      const fromCoords = formatCoordinates({ lon: fromLon, lat: fromLat });
+      const toCoords = formatCoordinates({ lon: toLon, lat: toLat });
 
       const response = await axios.get("/api/journey", {
         params: {
