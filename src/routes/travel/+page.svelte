@@ -1,15 +1,9 @@
-<script>
+<script lang="ts">
 import TravelMapOSM from "$lib/components/TravelMapOSM.svelte";
+import type { PageProps } from "./$types";
 
-// Example travel route through Paris landmarks
-const customRoute = [
-  { lat: 48.8584, lng: 2.2945, name: "Tour Eiffel" },
-  { lat: 48.8738, lng: 2.295, name: "Arc de Triomphe" },
-  { lat: 48.8715, lng: 2.3332, name: "Opéra Garnier" },
-  { lat: 48.8606, lng: 2.3376, name: "Musée du Louvre" },
-  { lat: 48.8599, lng: 2.3442, name: "Centre Pompidou" },
-  { lat: 48.853, lng: 2.3499, name: "Notre-Dame" },
-];
+// Get data from the `+page.ts` file
+const { data }: PageProps = $props();
 </script>
 
 <div class="travel-page">
@@ -19,7 +13,9 @@ const customRoute = [
   </header>
   
   <div class="map-container">
-      <TravelMapOSM travelRoute={customRoute} height="500px" />
+    <TravelMapOSM
+        travelRoute={data.travelRoute}
+    />
   </div>
   </div>
 

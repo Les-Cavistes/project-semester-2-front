@@ -1,23 +1,51 @@
-import type { LatLngExpression, Map as LeafletMap } from "leaflet";
+import type { TPoint } from "$lib/types";
+import type {
+  LatLngExpression,
+  Map as LeafletMap,
+  PolylineOptions,
+  TileLayerOptions,
+} from "leaflet";
+
+interface MapConfig {
+  tileLayerUrl: string;
+  tileLayerOptions: TileLayerOptions;
+  polylineOptions: PolylineOptions;
+}
+
+const DEFAULT_MAP_CONFIG: MapConfig = {
+  tileLayerUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  tileLayerOptions: {
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 19,
+  },
+  polylineOptions: {
+    color: "blue",
+    weight: 4,
+  },
+};
 
 export class LeafletService {
   private static instance: LeafletService;
+  private mapConfig: MapConfig;
 
   /**
    * Private constructor to enforce the singleton pattern.
    * Use `LeafletService.getInstance()` to get the instance of this class.
    */
-  private constructor() {}
+  private constructor(config: Partial<MapConfig> = {}) {
+    this.mapConfig = { ...DEFAULT_MAP_CONFIG, ...config };
+  }
 
   /**
    * Get the singleton instance of the LeafletService.
    *
    * @returns {LeafletService} The singleton instance of the LeafletService.
    */
-  public static getInstance(): LeafletService {
+  public static getInstance(config?: Partial<MapConfig>): LeafletService {
     if (!LeafletService.instance) {
-      LeafletService.instance = new LeafletService();
+      LeafletService.instance = new LeafletService(config);
     }
+
     return LeafletService.instance;
   }
 
@@ -25,29 +53,42 @@ export class LeafletService {
    * Initialize a Leaflet map.
    *
    * @param mapContainer {HTMLElement} The HTML element where the map will be rendered.
-   * @param defaultLat {number} The default latitude for the map's center.
-   * @param defaultLng {number} The default longitude for the map's center.
-   * @param defaultZoom {number} The default zoom level for the map.
+   * @param points {Array<TPoint>} An array of points representing the route.
    * @returns {Promise<LeafletMap>} A promise that resolves to the initialized Leaflet map.
    */
   async initializeMap(
     mapContainer: HTMLElement,
-    defaultLat: number,
-    defaultLng: number,
-    defaultZoom: number,
+    points: TPoint[],
   ): Promise<LeafletMap> {
-    const leaflet = await import("leaflet");
+    try {
+      const leaflet = await import("leaflet");
 
-    // Import Leaflet CSS dynamically
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(link);
+      // Import Leaflet CSS dynamically
+      if (!document.querySelector('link[href*="leaflet.css"]')) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(link);
+      }
 
-    // Initialize the map
-    return leaflet
-      .map(mapContainer)
-      .setView([defaultLat, defaultLng], defaultZoom);
+      // Initialize the map with a temporary center
+      const map = leaflet.map(mapContainer).setView([0, 0], 2);
+
+      // Calculate bounds from points
+      const bounds = leaflet.latLngBounds(
+        points.map((point) => [point.lat, point.lng]),
+      );
+
+      // Fit the map to the bounds with padding
+      map.fitBounds(bounds, {
+        maxZoom: this.mapConfig.tileLayerOptions.maxZoom,
+      });
+
+      return map;
+    } catch (error) {
+      console.error("Failed to initialize map:", error);
+      throw new Error("Failed to initialize map");
+    }
   }
 
   /**
@@ -57,14 +98,15 @@ export class LeafletService {
    * @returns {Promise<void>} A promise that resolves when the tile layer is added.
    */
   async addTileLayer(map: LeafletMap): Promise<void> {
-    const leaflet = await import("leaflet");
-
-    leaflet
-      .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-        maxZoom: 19,
-      })
-      .addTo(map);
+    try {
+      const leaflet = await import("leaflet");
+      leaflet
+        .tileLayer(this.mapConfig.tileLayerUrl, this.mapConfig.tileLayerOptions)
+        .addTo(map);
+    } catch (error) {
+      console.error("Failed to add tile layer:", error);
+      throw new Error("Failed to add tile layer");
+    }
   }
 
   /**
@@ -74,28 +116,42 @@ export class LeafletService {
    * @param travelRoute {Array<{ lat: number; lng: number; name: string }>} An array of points representing the route.
    * @returns {Promise<void>} A promise that resolves when the route is drawn on the map.
    */
-  async drawRoute(
-    map: LeafletMap,
-    travelRoute: { lat: number; lng: number; name: string }[],
-  ): Promise<void> {
-    const leaflet = await import("leaflet");
+  async drawRoute(map: LeafletMap, travelRoute: Array<TPoint>): Promise<void> {
+    try {
+      const leaflet = await import("leaflet");
 
-    // Convert travelRoute to LatLngExpression[][]
-    const routeCoordinates: LatLngExpression[] = travelRoute.map((point) => [
-      point.lat,
-      point.lng,
-    ]);
+      if (!travelRoute.length) {
+        throw new Error("Travel route is empty");
+      }
 
-    // Draw polyline
-    leaflet.polyline(routeCoordinates, { color: "blue", weight: 4 }).addTo(map);
+      // Convert travelRoute to LatLngExpression[]
+      const routeCoordinates: LatLngExpression[] = travelRoute.map((point) => [
+        point.lat,
+        point.lng,
+      ]);
 
-    // Add markers
-    travelRoute.forEach((point, index) => {
+      // Draw polyline
       leaflet
-        .marker([point.lat, point.lng])
-        .addTo(map)
-        .bindPopup(`<strong>${index + 1}. ${point.name}</strong>`);
-    });
+        .polyline(routeCoordinates, this.mapConfig.polylineOptions)
+        .addTo(map);
+
+      // Add markers with popups
+      travelRoute.forEach((point, index) => {
+        if (point.name) {
+          const marker = leaflet.marker([point.lat, point.lng]).addTo(map);
+
+          marker.bindPopup(
+            `<div class="marker-popup">
+            <strong>${index + 1}. ${point.name}</strong>
+          </div>`,
+          );
+        }
+      });
+    } catch (error) {
+      console.error("Failed to draw route:", error);
+
+      throw new Error("Failed to draw route");
+    }
   }
 }
 

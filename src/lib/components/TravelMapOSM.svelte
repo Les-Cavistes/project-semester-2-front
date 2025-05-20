@@ -1,52 +1,73 @@
-<!-- Utilization of leaflet to simulate travels -->
 <script lang="ts">
+import type { TPoint } from "$lib/types";
 import type { Map as LeafletMap } from "leaflet";
-import { onMount } from "svelte";
+import { onDestroy } from "svelte";
 import { leafletService } from "../services/leafletServices";
 
-// Default map settings
-const DEFAULT_LAT = 48.8566; // Paris latitude
-const DEFAULT_LNG = 2.3522; // Paris longitude
-const DEFAULT_ZOOM = 11;
+// Combined props type
+interface Props {
+  travelRoute: TPoint[];
+  height?: string;
+  width?: string;
+}
 
-// Props
-export const height = "500px";
-export const width = "100%";
-export const travelRoute = [
-  { lat: 48.8584, lng: 2.2945, name: "Tour Eiffel" },
-  { lat: 48.8606, lng: 2.3376, name: "Musée du Louvre" },
-  { lat: 48.853, lng: 2.3499, name: "Notre-Dame" },
-  { lat: 48.8738, lng: 2.295, name: "Arc de Triomphe" },
-];
+const { height = "500px", width = "100%", travelRoute }: Props = $props();
 
-let mapContainer: HTMLElement;
-let map: LeafletMap;
+let mapContainer: HTMLDivElement;
+let map: LeafletMap | null = $state(null);
+let error: string | null = $state(null);
 
-onMount(async () => {
-  if (typeof window !== "undefined") {
+async function initializeMap() {
+  try {
+    if (typeof window === "undefined" || !mapContainer) return;
+
     // Initialize the map using our service
-    map = await leafletService.initializeMap(
-      mapContainer,
-      DEFAULT_LAT,
-      DEFAULT_LNG,
-      DEFAULT_ZOOM,
-    );
+    map = await leafletService.initializeMap(mapContainer, travelRoute);
 
     // Add tile layer
     await leafletService.addTileLayer(map);
 
     // Draw the travel route
     await leafletService.drawRoute(map, travelRoute);
+  } catch (e) {
+    error = e instanceof Error ? e.message : "Failed to initialize map";
+    console.error("Map initialization error:", e);
+  }
+}
+
+$effect(() => {
+  if (mapContainer) {
+    initializeMap();
+  }
+});
+
+onDestroy(() => {
+  if (map) {
+    map.remove();
   }
 });
 </script>
 
-<div bind:this={mapContainer} style="width: {width}; height: {height};"></div>
+{#if error}
+  <div class="error">
+    {error}
+  </div>
+{:else}
+  <div bind:this={mapContainer} style="width: {width}; height: {height};"></div>
+{/if}
 
 <style>
   div {
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
+  }
+
+  .error {
+      color: #dc2626;
+      padding: 1rem;
+      border: 1px solid #dc2626;
+      border-radius: 8px;
+      background-color: #fee2e2;
   }
 </style>
