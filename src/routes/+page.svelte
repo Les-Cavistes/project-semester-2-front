@@ -3,75 +3,133 @@ import { t } from "$lib/translations";
 </script>
 
 <div class="home-page">
-  <h1>{$t('main.welcome')}</h1>
-  
-  <h2>Choose Your Map Integration</h2>
-  <div class="cards">
-    <a href="/embed" class="card">
-      <h2>Google Maps</h2>
-      <p>Integrate with Google Maps</p>
-    </a>
-    <a href="/openmap" class="card">
-      <h2>OpenStreetMap</h2>
-      <p>Integrate with OpenStreetMap</p>
-    </a>
-    <a href="/travel" class="card">
-      <h2>Travel Route</h2>
-      <p>Visualize travel routes with OpenStreetMap</p>
-    </a>
+  <!-- Header Banner Full Width -->
+  <header class="header-banner">
+    <h1>Paris GO</h1>
+    <p>{$t('main.welcome')}</p>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h2>Choisissez votre intégration cartographique</h2>
+    
+    <div class="cards">
+      <a href="/embed" class="card">
+        <h3>🗺️ Google Maps</h3>
+        <p>Intégration avec Google Maps</p>
+      </a>
+
+      <a href="/openmap" class="card">
+        <h3>🌍 OpenStreetMap</h3>
+        <p>Cartes libres et communautaires</p>
+      </a>
+
+      <a href="/travel" class="card featured">
+        <h3>🚀 Travel Route</h3>
+        <p>Visualisez vos trajets dans Paris</p>
+      </a>
+    </div>
   </div>
 </div>
 
 <style>
-  .home-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    text-align: center;
+  :global(body) {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+  .home-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Header Banner Full Width */
+  .header-banner {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    text-align: center;
+    padding: 3rem 1rem;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .header-banner h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .header-banner p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* Main Content */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
   }
 
   h2 {
+    text-align: center;
     font-size: 1.5rem;
-    margin-bottom: 10px;
+    margin-bottom: 2rem;
+    color: #1f2937;
   }
 
   .cards {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 1rem;
   }
 
   .card {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 1.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
     text-decoration: none;
-    color: #333;
-    background: #f9f9f9;
-    transition: all 0.2s ease-in-out;
-    position: relative;
+    color: inherit;
+    transition: all 0.2s ease;
   }
 
   .card:hover {
-    background: #e9e9e9;
+    border-color: #3b82f6;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
   }
 
-  .card h2 {
-    margin: 0 0 5px;
+  .card.featured {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #f8faff 0%, #eff6ff 100%);
+  }
+
+  .card h3 {
+    margin: 0 0 0.5rem 0;
     font-size: 1.2rem;
+    font-weight: 600;
   }
 
   .card p {
     margin: 0;
-    font-size: 0.9rem;
-    color: #666;
+    color: #6b7280;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-banner h1 {
+      font-size: 2rem;
+    }
+    
+    .container {
+      padding: 1rem;
+    }
   }
 </style>

@@ -97,6 +97,37 @@ const GeoJsonSchema = z.object({
   properties: z.array(GeoJsonPropertySchema),
 });
 
+// Add transport line information schema
+const TransportLineSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  label: z.string(),
+  color: z.string(),
+  text_color: z.string(),
+});
+
+// Add transport information schema
+const TransportSchema = z.object({
+  mode: z.string(),
+  network: z.string(),
+  line: TransportLineSchema,
+  direction: z.string(),
+  headsign: z.string(),
+  physical_mode: z.string(),
+});
+
+// Add stop point schema for detailed stops
+const StopPointSchema = z.object({
+  name: z.string(),
+});
+
+// Add stop date times schema
+const StopDateTimeSchema = z.object({
+  stop_point: StopPointSchema,
+  departure_date_time: z.string().optional(),
+  arrival_date_time: z.string().optional(),
+});
+
 const SectionSchema = z
   .object({
     duration: z.number().positive("Duration must be a positive number"),
@@ -106,6 +137,11 @@ const SectionSchema = z
     to: PlaceSchema,
     type: SectionTypeEnum,
     geojson: GeoJsonSchema.optional(),
+    // Add transport information (for public_transport sections)
+    transport: TransportSchema.optional(),
+    // Add detailed stop information
+    stop_date_times: z.array(StopDateTimeSchema).optional(),
+    // Legacy fields for backward compatibility
     line: z.string().optional(),
     mode: z.string().optional(),
     direction: z.string().optional(),
@@ -123,6 +159,8 @@ const SectionSchema = z
 
 const JourneySchema = z.object({
   duration: z.number().positive("Duration must be a positive number"),
+  departure_date_time: NavitiaDateSchema.optional(),
+  arrival_date_time: NavitiaDateSchema.optional(),
   sections: z.array(SectionSchema),
 });
 
@@ -135,6 +173,10 @@ export type TCoordinates = z.infer<typeof CoordinatesSchema>;
 export type TPlace = z.infer<typeof PlaceSchema>;
 export type TSectionType = z.infer<typeof SectionTypeEnum>;
 export type TGeoJson = z.infer<typeof GeoJsonSchema>;
+export type TTransportLine = z.infer<typeof TransportLineSchema>;
+export type TTransport = z.infer<typeof TransportSchema>;
+export type TStopPoint = z.infer<typeof StopPointSchema>;
+export type TStopDateTime = z.infer<typeof StopDateTimeSchema>;
 export type TSection = z.infer<typeof SectionSchema>;
 export type TJourney = z.infer<typeof JourneySchema>;
 export type TJourneysResponse = z.infer<typeof JourneysResponseSchema>;
