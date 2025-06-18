@@ -3,7 +3,6 @@ import type { TPlaces } from "$lib/schemas";
 import { ratpServices } from "$lib/services/ratpServices";
 import { onMount } from "svelte";
 
-// Définir les types pour les suggestions
 interface Suggestion {
   id: string;
   name: string;
@@ -12,7 +11,6 @@ interface Suggestion {
   coordinates: [number, number] | null;
 }
 
-// Définir le type pour le callback
 type AddressSelectedCallback = (place: Suggestion) => void;
 
 interface Props {
@@ -38,7 +36,6 @@ let inputRef: HTMLInputElement;
 let suggestionsRef: HTMLUListElement;
 let debounceTimeout: ReturnType<typeof setTimeout>;
 
-// Debounce function avec un type plus précis
 function debounce<T extends unknown[]>(
   func: (...args: T) => void,
   wait: number,
@@ -65,7 +62,6 @@ async function searchPlaces(query: string) {
     const ratpService = ratpServices();
     const response = await ratpService.getStopAutocomplete(query);
 
-    // Filtrer et formater les résultats avec une meilleure gestion des types
     suggestions =
       response.places?.map((place) => {
         const suggestion: Suggestion = {
@@ -75,7 +71,6 @@ async function searchPlaces(query: string) {
           coordinates: null,
         };
 
-        // Gestion sécurisée de l'adresse
         if (
           place.embedded_type === "address" &&
           "address" in place &&
@@ -88,7 +83,6 @@ async function searchPlaces(query: string) {
           suggestion.address = place.name;
         }
 
-        // Gestion sécurisée des coordonnées
         if (
           "coord" in place &&
           place.coord &&
@@ -166,7 +160,6 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 function handleBlur() {
-  // Délai pour permettre le clic sur une suggestion
   setTimeout(() => {
     showSuggestions = false;
     selectedIndex = -1;

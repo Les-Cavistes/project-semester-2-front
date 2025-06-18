@@ -420,7 +420,6 @@ onDestroy(() => {
 {/if}
 
 <style>
-  /* TravelMapOSM.svelte - Desktop CSS Styles */
 
 .map-wrapper {
   position: relative;
@@ -495,7 +494,6 @@ onDestroy(() => {
   margin: 0;
 }
 
-/* Journey Results Section */
 .journey-section {
   background: white;
   border-radius: 16px;
@@ -597,7 +595,6 @@ onDestroy(() => {
   font-size: 0.95rem;
 }
 
-/* Journey Steps */
 .journey-steps {
   padding: 2rem;
   border-top: 1px solid #f3f4f6;
@@ -694,7 +691,6 @@ onDestroy(() => {
   flex-shrink: 0;
 }
 
-/* Responsive adjustments for desktop */
 @media (min-width: 1024px) {
   .journey-options {
     grid-template-columns: repeat(3, 1fr);

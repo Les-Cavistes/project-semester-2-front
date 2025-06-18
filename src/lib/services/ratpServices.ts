@@ -1,4 +1,3 @@
-// src/lib/services/ratpServices.ts
 import type { TPlaces } from "$lib/schemas";
 import axios from "axios";
 
@@ -16,7 +15,6 @@ export class RatpServices {
 
   public async getStopAutocomplete(query: string): Promise<TPlaces> {
     try {
-      // Appeler l'API route SvelteKit au lieu de l'API externe directement
       const response = await axios.get("/api/places", {
         params: { q: query },
       });

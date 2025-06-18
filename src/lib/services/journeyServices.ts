@@ -35,7 +35,7 @@ export class JourneyServices {
    * @param fromLat - Starting point latitude
    * @param toLon - Destination longitude
    * @param toLat - Destination latitude
-   * @returns {Promise<TJourneysResponse>} Journey data with transport information
+   * @returns {Promise<TJourneysResponse>} Journey data
    * @throws {Error} When API request fails or validation fails
    */
   public async getJourney(
@@ -48,8 +48,6 @@ export class JourneyServices {
       const fromCoords = formatCoordinates({ lon: fromLon, lat: fromLat });
       const toCoords = formatCoordinates({ lon: toLon, lat: toLat });
 
-      console.log(`🚀 Requesting journey from ${fromCoords} to ${toCoords}`);
-
       const response = await axios.get("/api/journey", {
         params: {
           from: fromCoords,
@@ -57,35 +55,18 @@ export class JourneyServices {
         },
       });
 
-      console.log("📥 Raw API response:", response.data);
-
       // Validate response against schema
-      const validatedData = JourneysResponseSchema.parse(response.data.data);
-
-      console.log("✅ Validated journey data:", validatedData);
-      console.log(
-        "🚇 Transport info sample:",
-        validatedData.journeys[0]?.sections?.[0]?.transport,
-      );
-
-      return validatedData;
+      return JourneysResponseSchema.parse(response.data.data);
     } catch (e) {
-      console.error("❌ Journey service error:", e);
-
       if (e instanceof Error) {
         // Handle validation errors
         if (e.name === "ZodError") {
-          console.error("📋 Schema validation failed:", e.message);
           return Promise.reject(
             error(500, `Response validation failed: ${e.message}`),
           );
         }
         // Handle axios errors
         if (axios.isAxiosError(e)) {
-          console.error(
-            "🌐 API request failed:",
-            e.response?.data || e.message,
-          );
           return Promise.reject(
             error(
               e.response?.status || 500,
