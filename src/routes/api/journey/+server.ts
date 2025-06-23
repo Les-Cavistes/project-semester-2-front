@@ -3,6 +3,7 @@ import type { RequestHandler } from "./$types";
 import axios from "axios";
 import { z } from "zod";
 import { PUBLIC_BACK_ENDPOINT } from "$env/static/public";
+import { CAVISTES_API_KEY } from "$env/static/private";
 
 const JourneyQuerySchema = z.object({
   from: z.string().regex(/^-?\d+(\.\d+)?;-?\d+(\.\d+)?$/, "Must be in format 'longitude;latitude'"),
@@ -40,7 +41,10 @@ export const GET: RequestHandler = async ({ url }) => {
     }
 
     const { data } = await axios.get(`${PUBLIC_BACK_ENDPOINT}/journey`, {
-      params: { from, to }
+      params: { from, to },
+      headers: {
+        'CAVISTES_API_KEY':  CAVISTES_API_KEY || ''
+      }
     });
 
     return json(data);
