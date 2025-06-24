@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
 import type { TJourneysResponse } from "$lib/schemas";
+import { writable } from "svelte/store";
 
 interface JourneyState {
   data: TJourneysResponse | null;
@@ -10,7 +10,7 @@ interface JourneyState {
 const initialState: JourneyState = {
   data: null,
   loading: false,
-  error: null
+  error: null,
 };
 
 const createJourneyStore = () => {
@@ -18,17 +18,22 @@ const createJourneyStore = () => {
 
   return {
     subscribe,
-    
-    setJourneyData: (journeyData: TJourneysResponse) => 
-      update(state => ({ ...state, data: journeyData, loading: false, error: null })),
-    
-    setError: (errorMessage: string) => 
-      update(state => ({ ...state, error: errorMessage, loading: false })),
-    
-    setLoading: (isLoading: boolean) => 
-      update(state => ({ ...state, loading: isLoading })),
-    
-    reset: () => set(initialState)
+
+    setJourneyData: (journeyData: TJourneysResponse) =>
+      update((state) => ({
+        ...state,
+        data: journeyData,
+        loading: false,
+        error: null,
+      })),
+
+    setError: (errorMessage: string) =>
+      update((state) => ({ ...state, error: errorMessage, loading: false })),
+
+    setLoading: (isLoading: boolean) =>
+      update((state) => ({ ...state, loading: isLoading })),
+
+    reset: () => set(initialState),
   };
 };
 
