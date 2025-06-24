@@ -1,3 +1,4 @@
+import { CAVISTES_API_KEY } from "$env/static/private";
 import { PUBLIC_BACK_ENDPOINT } from "$env/static/public";
 import { json } from "@sveltejs/kit";
 import axios from "axios";
@@ -49,8 +50,26 @@ export const GET: RequestHandler = async ({ url }) => {
       }
     }
 
+    if (
+      CAVISTES_API_KEY === undefined ||
+      CAVISTES_API_KEY === null ||
+      CAVISTES_API_KEY.trim() === ""
+    ) {
+      console.error("Configuration error: CAVISTES_API_KEY is missing or invalid.");
+      return json(
+        {
+          status: "error",
+          message: "CAVISTES_API_KEY is not defined",
+        },
+        { status: 500 },
+      );
+    }
+
     const { data } = await axios.get(`${PUBLIC_BACK_ENDPOINT}/journey`, {
       params: { from, to },
+      headers: {
+        CAVISTES_API_KEY: CAVISTES_API_KEY,
+      },
     });
 
     return json(data);

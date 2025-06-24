@@ -56,17 +56,6 @@ function parseNavitiaDate(dateTime: string): Date {
 }
 
 // Format Date object to Navitia format
-function formatToNavitiaDate(date: Date): string {
-  const year = date.getFullYear().toString();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const hour = date.getHours().toString().padStart(2, "0");
-  const minute = date.getMinutes().toString().padStart(2, "0");
-  const second = date.getSeconds().toString().padStart(2, "0");
-
-  return `${year}${month}${day}T${hour}${minute}${second}`;
-}
-
 const NavitiaDateSchema = z
   .string()
   .refine((val) => /^\d{8}T\d{6}$/.test(val), {
@@ -118,7 +107,6 @@ export const JourneysResponseSchema = z.object({
 // Export types
 export type TCoordinates = z.infer<typeof CoordinatesSchema>;
 export type TPlace = z.infer<typeof PlaceSchema>;
-export type TSectionType = z.infer<typeof SectionTypeEnum>;
 export type TSection = z.infer<typeof SectionSchema>;
 export type TJourney = z.infer<typeof JourneySchema>;
 export type TJourneysResponse = z.infer<typeof JourneysResponseSchema>;

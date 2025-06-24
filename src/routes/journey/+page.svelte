@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { TJourney } from "$lib/schemas";
-import { journeyServices } from "$lib/services/journeyServices";
+import { getJourney } from "$lib/services/journeyServices";
 import { journeyStore } from "$lib/stores/journey";
 import { t } from "$lib/translations";
 
@@ -64,8 +64,7 @@ async function handleSubmit(e: Event) {
   journeyStore.setLoading(true);
 
   try {
-    const journeyService = journeyServices();
-    const response = await journeyService.getJourney(
+    const response = await getJourney(
       coordinates.fromLon,
       coordinates.fromLat,
       coordinates.toLon,
