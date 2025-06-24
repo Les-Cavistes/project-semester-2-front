@@ -1,88 +1,89 @@
 <script lang="ts">
-    import { journeyStore } from "$lib/stores/journey";
-    import { journeyServices } from "$lib/services/journeyServices";
-    import { t } from "$lib/translations";
-    import type { TJourney } from "$lib/schemas";
-    
-    // Form state
-    const coordinates = $state({
-      fromLon: 2.291881,  
-      fromLat: 48.877711,
-      toLon: 2.356462,
-      toLat: 48.865943
-    });
-    
-    const validationError = $state<string | null>(null);
-    let selectedJourney = $state<TJourney | null>(null);
-    
-    function formatDuration(seconds: number): string {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes}m ${remainingSeconds}s`;
-    }
+import type { TJourney } from "$lib/schemas";
+import { getJourney } from "$lib/services/journeyServices";
+import { journeyStore } from "$lib/stores/journey";
+import { t } from "$lib/translations";
 
-    function formatDate(date: Date): string {
-      const options: Intl.DateTimeFormatOptions = {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      };
-      return new Date(date).toLocaleString(undefined, options);
-    }
-    
-    function getTransportIcon(type: string): string {
-      switch (type) {
-        case "public_transport":
-          return "🚇";
-        case "street_network":
-          return "🚶";
-        case "transfer":
-          return "🔄";
-        default:
-          return "🚊";
-      }
-    }
+// Form state
+const coordinates = $state({
+  fromLon: 2.291881,
+  fromLat: 48.877711,
+  toLon: 2.356462,
+  toLat: 48.865943,
+});
 
-    function getTransportType(type: string): string {
-      switch (type) {
-        case "public_transport":
-          return $t('main.transportTypes.public_transport');
-        case "street_network":
-          return $t('main.transportTypes.street_network');
-        case "transfer":
-          return $t('main.transportTypes.transfer');
-        default:
-          return "Unknown";
-      }
-    }
-    
-    async function handleSubmit(e: Event) {
-      e.preventDefault();
-      
-      selectedJourney = null;
-      
-      journeyStore.setLoading(true);
-      
-      try {
-        const journeyService = journeyServices();
-        const response = await journeyService.getJourney(
-          coordinates.fromLon,
-          coordinates.fromLat,
-          coordinates.toLon,
-          coordinates.toLat
-        );
-        
-        journeyStore.setJourneyData(response);
-      } catch (error) {
-        console.error("Error fetching journey:", error);
-        journeyStore.setError(error instanceof Error ? error.message : "Failed to fetch journey data");
-      }
-    }
-    
-    function selectJourney(journey: TJourney) {
-      selectedJourney = journey;
-    }
-  </script>
+const validationError = $state<string | null>(null);
+let selectedJourney = $state<TJourney | null>(null);
+
+function formatDuration(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+function formatDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  return new Date(date).toLocaleString(undefined, options);
+}
+
+function getTransportIcon(type: string): string {
+  switch (type) {
+    case "public_transport":
+      return "🚇";
+    case "street_network":
+      return "🚶";
+    case "transfer":
+      return "🔄";
+    default:
+      return "🚊";
+  }
+}
+
+function getTransportType(type: string): string {
+  switch (type) {
+    case "public_transport":
+      return $t("main.transportTypes.public_transport");
+    case "street_network":
+      return $t("main.transportTypes.street_network");
+    case "transfer":
+      return $t("main.transportTypes.transfer");
+    default:
+      return "Unknown";
+  }
+}
+
+async function handleSubmit(e: Event) {
+  e.preventDefault();
+
+  selectedJourney = null;
+
+  journeyStore.setLoading(true);
+
+  try {
+    const response = await getJourney(
+      coordinates.fromLon,
+      coordinates.fromLat,
+      coordinates.toLon,
+      coordinates.toLat,
+    );
+
+    journeyStore.setJourneyData(response);
+  } catch (error) {
+    console.error("Error fetching journey:", error);
+    journeyStore.setError(
+      error instanceof Error ? error.message : "Failed to fetch journey data",
+    );
+  }
+}
+
+function selectJourney(journey: TJourney) {
+  selectedJourney = journey;
+}
+</script>
   
   <div class="journey-container">
     <h1>

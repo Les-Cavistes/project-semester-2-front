@@ -7,9 +7,6 @@ declare global {
     // interface PageData {}
     // interface PageState {}
     // interface Platform {}
-    interface PrivateEnv {
-      CAVISTES_API_KEY: string;
-    }
   }
 }
 
