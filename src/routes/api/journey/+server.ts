@@ -1,12 +1,22 @@
+import { PUBLIC_BACK_ENDPOINT } from "$env/static/public";
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
 import axios from "axios";
 import { z } from "zod";
-import { PUBLIC_BACK_ENDPOINT } from "$env/static/public";
+import type { RequestHandler } from "./$types";
 
 const JourneyQuerySchema = z.object({
-  from: z.string().regex(/^-?\d+(\.\d+)?;-?\d+(\.\d+)?$/, "Must be in format 'longitude;latitude'"),
-  to: z.string().regex(/^-?\d+(\.\d+)?;-?\d+(\.\d+)?$/, "Must be in format 'longitude;latitude'")
+  from: z
+    .string()
+    .regex(
+      /^-?\d+(\.\d+)?;-?\d+(\.\d+)?$/,
+      "Must be in format 'longitude;latitude'",
+    ),
+  to: z
+    .string()
+    .regex(
+      /^-?\d+(\.\d+)?;-?\d+(\.\d+)?$/,
+      "Must be in format 'longitude;latitude'",
+    ),
 });
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -19,9 +29,9 @@ export const GET: RequestHandler = async ({ url }) => {
       return json(
         {
           status: "error",
-          message: "Both 'from' and 'to' parameters are required"
+          message: "Both 'from' and 'to' parameters are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -32,15 +42,15 @@ export const GET: RequestHandler = async ({ url }) => {
         return json(
           {
             status: "error",
-            message: `Invalid parameters: ${validationError.errors[0].message}`
+            message: `Invalid parameters: ${validationError.errors[0].message}`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
     const { data } = await axios.get(`${PUBLIC_BACK_ENDPOINT}/journey`, {
-      params: { from, to }
+      params: { from, to },
     });
 
     return json(data);
@@ -51,9 +61,9 @@ export const GET: RequestHandler = async ({ url }) => {
       return json(
         {
           status: "error",
-          message: error.response?.data?.message || "Backend server error"
+          message: error.response?.data?.message || "Backend server error",
         },
-        { status: error.response?.status || 500 }
+        { status: error.response?.status || 500 },
       );
     }
 
@@ -61,9 +71,9 @@ export const GET: RequestHandler = async ({ url }) => {
       {
         status: "error",
         message: "Failed to fetch journey data",
-        error: error instanceof Error ? error.message : "Unknown error"
+        error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

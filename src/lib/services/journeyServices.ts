@@ -1,6 +1,6 @@
-import axios from "axios";
 import { JourneysResponseSchema, type TJourneysResponse } from "$lib/schemas";
 import { error } from "@sveltejs/kit";
+import axios from "axios";
 
 type Coordinates = {
   lon: number;
@@ -30,7 +30,7 @@ export class JourneyServices {
 
   /**
    * Get journey information between two coordinate points
-   * 
+   *
    * @param fromLon - Starting point longitude
    * @param fromLat - Starting point latitude
    * @param toLon - Destination longitude
@@ -42,7 +42,7 @@ export class JourneyServices {
     fromLon: number,
     fromLat: number,
     toLon: number,
-    toLat: number
+    toLat: number,
   ): Promise<TJourneysResponse> {
     try {
       const fromCoords = formatCoordinates({ lon: fromLon, lat: fromLat });
@@ -51,8 +51,8 @@ export class JourneyServices {
       const response = await axios.get("/api/journey", {
         params: {
           from: fromCoords,
-          to: toCoords
-        }
+          to: toCoords,
+        },
       });
 
       // Validate response against schema
@@ -62,7 +62,7 @@ export class JourneyServices {
         // Handle validation errors
         if (e.name === "ZodError") {
           return Promise.reject(
-            error(500, `Response validation failed: ${e.message}`)
+            error(500, `Response validation failed: ${e.message}`),
           );
         }
         // Handle axios errors
@@ -70,8 +70,8 @@ export class JourneyServices {
           return Promise.reject(
             error(
               e.response?.status || 500,
-              `API request failed: ${e.message}`
-            )
+              `API request failed: ${e.message}`,
+            ),
           );
         }
       }
