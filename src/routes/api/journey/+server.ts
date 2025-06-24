@@ -55,6 +55,7 @@ export const GET: RequestHandler = async ({ url }) => {
       CAVISTES_API_KEY === null ||
       CAVISTES_API_KEY.trim() === ""
     ) {
+      console.error("Configuration error: CAVISTES_API_KEY is missing or invalid.");
       return json(
         {
           status: "error",
