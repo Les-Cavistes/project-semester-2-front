@@ -29,7 +29,7 @@ To manually run Biome:
 npx biome check src/
 ```
 
-### [Hooksmith](https://github.com/tomPlanche/hooksmith) (optional)
+### [Hooksmith](https://github.com/tomPlanche/hooksmith)
 
 Git hooks are managed by Hooksmith. Pre-commit hooks will run:
 

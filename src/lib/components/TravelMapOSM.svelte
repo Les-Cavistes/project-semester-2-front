@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { TJourney, TJourneysResponse, TSection } from "$lib/schemas";
-import { journeyServices } from "$lib/services/journeyServices";
+import { getJourney } from "$lib/services/journeyServices";
 import type { TPoint } from "$lib/types";
 import type { LatLngExpression, Layer, Map as LeafletMap } from "leaflet";
 import { onDestroy, onMount } from "svelte";
@@ -178,8 +178,8 @@ async function loadJourneyData() {
     const origin = travelRoute[0];
     const destination = travelRoute[travelRoute.length - 1];
 
-    const service = journeyServices();
-    const response = await service.getJourney(
+    const service = getJourney;
+    const response = await service(
       origin.lng,
       origin.lat,
       destination.lng,
@@ -191,7 +191,7 @@ async function loadJourneyData() {
 
       // Trier par durée et prendre seulement les 3 plus rapides
       const sortedJourneys = response.journeys
-        .sort((a, b) => a.duration - b.duration)
+        .sort((a: TJourney, b: TJourney) => a.duration - b.duration)
         .slice(0, 3);
 
       journeyData = { journeys: sortedJourneys };
@@ -337,7 +337,8 @@ onDestroy(() => {
         <div 
           class="option-card"
           class:selected={selectedOption === i}
-          on:click={() => changeOption(i)}
+          onclick={() => changeOption(i)}
+          onkeydown={(e) => e.key === 'Enter' && changeOption(i)}
           role="button"
           tabindex="0"
         >

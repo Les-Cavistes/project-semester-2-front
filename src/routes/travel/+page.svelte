@@ -109,7 +109,7 @@ function swapAddresses() {
           </div>
         </div>
         
-        <button class="swap-icon" on:click={swapAddresses}>⇅</button>
+        <button class="swap-icon" onclick={swapAddresses}>⇅</button>
         
         <div class="input-group">
           <div class="input-icon">🟠</div>
@@ -121,7 +121,7 @@ function swapAddresses() {
             />
           </div>
         </div>
-<button class="route-btn" on:click={updateRoute}>
+<button class="route-btn" onclick={updateRoute}>
             Votre Trajet
           </button>
       </div>
@@ -155,7 +155,7 @@ function swapAddresses() {
         </div>
       {/if}
       
-      <button class="reset-btn" on:click={resetRoute}>
+      <button class="reset-btn" onclick={resetRoute}>
         ↻ Réinitialiser
       </button>
     </div>
@@ -308,17 +308,6 @@ function swapAddresses() {
 .route-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.route-btn.demo {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-  font-size: 0.95rem;
-  padding: 0.8rem 1.5rem;
-}
-
-.route-btn.demo:hover {
-  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
 }
 
 /* Selected Info */

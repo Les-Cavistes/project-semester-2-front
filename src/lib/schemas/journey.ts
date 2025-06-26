@@ -31,6 +31,42 @@ const SectionTypeEnum = z.enum([
   "transfer",
 ]);
 
+// Transport line schema
+const TransportLineSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  code: z.string().optional(),
+  color: z.string().optional(),
+  text_color: z.string().optional(),
+  label: z.string().optional(),
+});
+
+// Transport schema
+const TransportSchema = z.object({
+  mode: z.string().optional(),
+  direction: z.string().optional(),
+  line: TransportLineSchema.optional(),
+});
+
+// Stop date time schema
+const StopDateTimeSchema = z.object({
+  stop_point: z
+    .object({
+      id: z.string().optional(),
+      name: z.string().optional(),
+      coordinates: CoordinatesSchema.optional(),
+    })
+    .optional(),
+  departure_date_time: z.string().optional(),
+  arrival_date_time: z.string().optional(),
+});
+
+// GeoJSON schema
+const GeoJSONSchema = z.object({
+  type: z.string().optional(),
+  coordinates: z.array(z.array(z.number())).optional(),
+});
+
 // Utility function to parse Navitia date format
 function parseNavitiaDate(dateTime: string): Date {
   if (!dateTime || !/^\d{8}T\d{6}$/.test(dateTime)) {
@@ -56,17 +92,6 @@ function parseNavitiaDate(dateTime: string): Date {
 }
 
 // Format Date object to Navitia format
-function formatToNavitiaDate(date: Date): string {
-  const year = date.getFullYear().toString();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const hour = date.getHours().toString().padStart(2, "0");
-  const minute = date.getMinutes().toString().padStart(2, "0");
-  const second = date.getSeconds().toString().padStart(2, "0");
-
-  return `${year}${month}${day}T${hour}${minute}${second}`;
-}
-
 const NavitiaDateSchema = z
   .string()
   .refine((val) => /^\d{8}T\d{6}$/.test(val), {
@@ -87,47 +112,6 @@ const NavitiaDateSchema = z
   )
   .transform((val) => parseNavitiaDate(val));
 
-const GeoJsonPropertySchema = z.object({
-  length: z.number(),
-});
-
-const GeoJsonSchema = z.object({
-  type: z.string(),
-  coordinates: z.array(z.array(z.number())),
-  properties: z.array(GeoJsonPropertySchema),
-});
-
-// Add transport line information schema
-const TransportLineSchema = z.object({
-  code: z.string(),
-  name: z.string(),
-  label: z.string(),
-  color: z.string(),
-  text_color: z.string(),
-});
-
-// Add transport information schema
-const TransportSchema = z.object({
-  mode: z.string(),
-  network: z.string(),
-  line: TransportLineSchema,
-  direction: z.string(),
-  headsign: z.string(),
-  physical_mode: z.string(),
-});
-
-// Add stop point schema for detailed stops
-const StopPointSchema = z.object({
-  name: z.string(),
-});
-
-// Add stop date times schema
-const StopDateTimeSchema = z.object({
-  stop_point: StopPointSchema,
-  departure_date_time: z.string().optional(),
-  arrival_date_time: z.string().optional(),
-});
-
 const SectionSchema = z
   .object({
     duration: z.number().positive("Duration must be a positive number"),
@@ -136,16 +120,9 @@ const SectionSchema = z
     from: PlaceSchema,
     to: PlaceSchema,
     type: SectionTypeEnum,
-    geojson: GeoJsonSchema.optional(),
-    // Add transport information (for public_transport sections)
     transport: TransportSchema.optional(),
-    // Add detailed stop information
+    geojson: GeoJSONSchema.optional(),
     stop_date_times: z.array(StopDateTimeSchema).optional(),
-    // Legacy fields for backward compatibility
-    line: z.string().optional(),
-    mode: z.string().optional(),
-    direction: z.string().optional(),
-    color: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -159,9 +136,9 @@ const SectionSchema = z
 
 const JourneySchema = z.object({
   duration: z.number().positive("Duration must be a positive number"),
+  sections: z.array(SectionSchema),
   departure_date_time: NavitiaDateSchema.optional(),
   arrival_date_time: NavitiaDateSchema.optional(),
-  sections: z.array(SectionSchema),
 });
 
 export const JourneysResponseSchema = z.object({
@@ -171,15 +148,6 @@ export const JourneysResponseSchema = z.object({
 // Export types
 export type TCoordinates = z.infer<typeof CoordinatesSchema>;
 export type TPlace = z.infer<typeof PlaceSchema>;
-export type TSectionType = z.infer<typeof SectionTypeEnum>;
-export type TGeoJson = z.infer<typeof GeoJsonSchema>;
-export type TTransportLine = z.infer<typeof TransportLineSchema>;
-export type TTransport = z.infer<typeof TransportSchema>;
-export type TStopPoint = z.infer<typeof StopPointSchema>;
-export type TStopDateTime = z.infer<typeof StopDateTimeSchema>;
 export type TSection = z.infer<typeof SectionSchema>;
 export type TJourney = z.infer<typeof JourneySchema>;
 export type TJourneysResponse = z.infer<typeof JourneysResponseSchema>;
-
-// Fonctions utilitaires exportées
-export { parseNavitiaDate, formatToNavitiaDate };

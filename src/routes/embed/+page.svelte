@@ -19,15 +19,16 @@ import ParisEmbedMap from "$lib/components/ParisEmbedMap.svelte";
       />
     </div>
 
-  <div class="info-panel">
-    <h3>Avantages de l'API Embed</h3>
-    <ul>
-      <li><strong>Gratuite</strong> - Utilisation illimitée sans coût</li>
-      <li><strong>Simple</strong> - Aucun JavaScript complexe requis</li>
-      <li><strong>Performante</strong> - Charge rapidement sur tous les appareils</li>
-      <li><strong>Responsive</strong> - S'adapte aux différentes tailles d'écran</li>
-    </ul>
-  </div>
+    <div class="info-panel">
+      <h3>Avantages de l'API Embed</h3>
+      <ul>
+        <li><strong>Gratuite</strong> - Utilisation illimitée sans coût</li>
+        <li><strong>Simple</strong> - Aucun JavaScript complexe requis</li>
+        <li><strong>Performante</strong> - Charge rapidement sur tous les appareils</li>
+        <li><strong>Responsive</strong> - S'adapte aux différentes tailles d'écran</li>
+      </ul>
+    </div>
+  </section>
 </div>
 
 <style>

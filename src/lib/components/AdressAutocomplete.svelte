@@ -192,10 +192,10 @@ onMount(() => {
       type="text"
       bind:value={inputValue}
       placeholder={placeholder}
-      on:input={handleInput}
-      on:keydown={handleKeydown}
-      on:blur={handleBlur}
-      on:focus={handleFocus}
+      oninput={handleInput}
+      onkeydown={handleKeydown}
+      onblur={handleBlur}
+      onfocus={handleFocus}
       class="input"
       autocomplete="off"
     />
@@ -212,8 +212,10 @@ onMount(() => {
           <li
             class="suggestion-item"
             class:selected={index === selectedIndex}
-            on:click={() => selectSuggestion(suggestion)}
+            onclick={() => selectSuggestion(suggestion)}
+            onkeydown={(e) => e.key === 'Enter' && selectSuggestion(suggestion)}
             role="option"
+            aria-selected={index === selectedIndex}
             tabindex="-1"
           >
             <div class="suggestion-content">
